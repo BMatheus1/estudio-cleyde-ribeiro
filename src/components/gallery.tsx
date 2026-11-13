@@ -1,18 +1,101 @@
 "use client";
-import { ArrowLeft, ArrowRight, ArrowUpRight, Expand, X } from "lucide-react";
-import { useRef, useState, type KeyboardEvent } from "react";
+import { ArrowLeft, ArrowRight, ArrowUpRight, Expand, MoveHorizontal, X } from "lucide-react";
+import { useEffect, useRef, useState, type KeyboardEvent, type PointerEvent } from "react";
 import Image from "next/image";
 import { works, type Work } from "../data/portfolio";
 import { whatsapp } from "../data/business";
 
+const introduced = new Set<string>();
+
 function Comparison({ work }: { work: Work }) {
   const [position, setPosition] = useState(50);
-  return <div className="comparison">
+  const [hint, setHint] = useState(false);
+  const [demo, setDemo] = useState(false);
+  const surface = useRef<HTMLDivElement>(null);
+  const stop = useRef<() => void>(undefined);
+  const pointer = useRef<{ id: number; x: number; y: number; dragging: boolean }>(null);
+
+  useEffect(() => {
+    if (!surface.current || introduced.has(work.id)) return;
+    let frame = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const observer = new IntersectionObserver(entries => {
+      if (introduced.has(work.id) || !entries.some(entry => entry.intersectionRatio >= 0.35)) return;
+      observer.disconnect();
+      introduced.add(work.id);
+      setHint(true);
+      timer = setTimeout(() => setHint(false), 3200);
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      setDemo(true);
+      const start = performance.now();
+      function animate(now: number) {
+        const progress = Math.min((now - start) / 1250, 1);
+        setPosition(50 + 8 * Math.sin(Math.PI * progress) ** 2);
+        if (progress < 1) frame = requestAnimationFrame(animate);
+        else setDemo(false);
+      }
+      frame = requestAnimationFrame(animate);
+    }, { threshold: 0.35 });
+    const cleanup = () => {
+      observer.disconnect();
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
+    };
+    stop.current = cleanup;
+    observer.observe(surface.current);
+    return cleanup;
+  }, [work.id]);
+
+  function interact() {
+    introduced.add(work.id);
+    stop.current?.();
+    setHint(false);
+    setDemo(false);
+  }
+
+  function move(event: PointerEvent<HTMLInputElement>) {
+    const { left, width } = event.currentTarget.getBoundingClientRect();
+    setPosition(Math.round(Math.max(0, Math.min(100, 100 * (event.clientX - left) / width))));
+  }
+
+  return <div className="comparison" ref={surface}>
     <Image fill sizes="(max-width: 650px) 90vw, 500px" src={`/trabalhos/${work.id}-after.webp`} alt={`Depois de ${work.title.toLowerCase()}`} />
     <Image fill sizes="(max-width: 650px) 90vw, 500px" src={`/trabalhos/${work.id}-before.webp`} alt={`Antes de ${work.title.toLowerCase()}`} style={{ clipPath: `inset(0 ${100 - position}% 0 0)` }} />
     <span className="before-label">Antes</span><span className="after-label">Depois</span>
-    <span className="divider" style={{ left: position + "%" }} aria-hidden="true"><span>‹ ›</span></span>
-    <input type="range" min="0" max="100" value={position} aria-label="Posição da comparação antes e depois" aria-valuetext={`${position}% da imagem de antes`} onChange={event => setPosition(event.target.valueAsNumber)} />
+    <span className="divider" style={{ left: position + "%" }} aria-hidden="true"><span>
+      <span className={demo ? "comparison-arrows demonstrating" : "comparison-arrows"}><ArrowLeft size={14} /><ArrowRight size={14} /></span>
+    </span></span>
+    <span className="comparison-hint" data-visible={hint} aria-hidden="true"><MoveHorizontal size={15} /> Deslize para comparar</span>
+    <input type="range" min="0" max="100" value={Math.round(position)} aria-label="Posição da comparação antes e depois" aria-valuetext={`${Math.round(position)}% da imagem de antes`}
+      onChange={event => { interact(); setPosition(event.target.valueAsNumber); }}
+      onKeyDown={event => {
+        if (["ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "Home", "End", "PageUp", "PageDown"].includes(event.key)) interact();
+      }}
+      onPointerDown={event => {
+        if (!event.isPrimary || event.button !== 0) return;
+        event.preventDefault();
+        interact();
+        event.currentTarget.focus({ preventScroll: true });
+        event.currentTarget.setPointerCapture(event.pointerId);
+        pointer.current = { id: event.pointerId, x: event.clientX, y: event.clientY, dragging: event.pointerType === "mouse" };
+        if (pointer.current.dragging) move(event);
+      }}
+      onPointerMove={event => {
+        const gesture = pointer.current;
+        if (gesture?.id !== event.pointerId) return;
+        const x = Math.abs(event.clientX - gesture.x);
+        const y = Math.abs(event.clientY - gesture.y);
+        if (x >= 5 && x > y) gesture.dragging = true;
+        if (gesture.dragging) move(event);
+      }}
+      onPointerUp={event => {
+        const gesture = pointer.current;
+        if (gesture?.id !== event.pointerId) return;
+        if (gesture.dragging || Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) < 5) move(event);
+        pointer.current = null;
+      }}
+      onLostPointerCapture={event => { if (pointer.current?.id === event.pointerId) pointer.current = null; }}
+    />
   </div>;
 }
 
