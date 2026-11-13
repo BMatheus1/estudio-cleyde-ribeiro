@@ -17,16 +17,25 @@ export const serviceGroups: { id: string; name: string; services: Service[] }[] 
     ] },
     { id: "ozonioterapia", name: "Pacote de ozonioterapia", price: 200 },
     { id: "tratamentos-gerais", name: "Tratamentos capilares em geral", price: 80 },
+    { id: "selagem", name: "Selagem capilar", price: null },
+    { id: "lisoplastia", name: "Lisoplastia", price: null },
+    { id: "botox", name: "Botox capilar", price: null },
+    { id: "hidratacao", name: "Hidratação", price: null },
+    { id: "cauterizacao", name: "Cauterização", price: null },
+    { id: "reconstrucao", name: "Reconstrução capilar", price: null },
     { id: "penteados", name: "Penteados", price: null },
     { id: "coloracao", name: "Coloração", price: null },
   ] },
-  { id: "estetica", name: "Estética e unhas", services: [
-    { id: "pe-mao", name: "Pé e mão", price: 70 },
+  { id: "estetica", name: "Estética facial", services: [
     { id: "limpeza-pele", name: "Limpeza de pele", price: 130 },
+    { id: "sobrancelha-fio-a-fio", name: "Sobrancelha fio a fio", price: 150,
+      description: "Fios com design personalizado para um resultado natural que realça sua beleza." },
     { id: "sobrancelhas", name: "Design de sobrancelhas", price: null },
     { id: "cilios", name: "Cílios", price: null },
     { id: "maquiagem", name: "Maquiagem", price: null },
-    { id: "dep-feminina", name: "Depilação feminina", price: null },
+  ] },
+  { id: "unhas", name: "Unhas", services: [
+    { id: "pe-mao", name: "Pé e mão", price: 70 },
   ] },
   { id: "dep-masc", name: "Depilação masculina", services: [
     { id: "dep-masc-costas", name: "Costas", price: 80 },
@@ -35,6 +44,9 @@ export const serviceGroups: { id: string; name: string; services: Service[] }[] 
     { id: "dep-masc-perna", name: "Perna inteira", price: 80 },
     { id: "dep-masc-meia-perna", name: "Meia perna", price: 60 },
   ] },
+  { id: "dep-feminina", name: "Depilação feminina", services: [
+    { id: "dep-feminina", name: "Depilação feminina", price: null },
+  ] },
   { id: "bem-estar", name: "Bem-estar", services: [
     { id: "argiloterapia", name: "Argiloterapia", price: null },
     { id: "massagem-relaxante", name: "Massagem relaxante", price: null },
@@ -42,16 +54,36 @@ export const serviceGroups: { id: string; name: string; services: Service[] }[] 
   ] },
 ];
 
-export const combo: Service = {
-  id: "combo-depilacao-feminina",
-  name: "Combo Depilação Feminina",
-  price: 85,
-  description: "Inclui buço, meia perna e axila.",
+type Promotion = {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  included: string[];
+  active: boolean;
+  approved: boolean;
+  startsOn?: string;
+  endsOn?: string;
+  flyerPeriod?: string;
+  payment?: string;
 };
 
+const hairCampaign = { active: false, approved: false, flyerPeriod: "01/11 a 30/11", payment: "Pix" };
+
+export const promotions: Promotion[] = [
+  { ...hairCampaign, id: "combo-capilar-1", name: "Corte + Escova + Hidratação", price: 89.90,
+    description: "Cuidado completo para seus fios.", included: ["Corte", "Escova", "Hidratação"] },
+  { ...hairCampaign, id: "combo-capilar-2", name: "Cauterização + Corte", price: 119.90,
+    description: "Força, brilho e movimento.", included: ["Cauterização", "Corte"] },
+  { ...hairCampaign, id: "combo-capilar-3", name: "Botox + Reconstrução + Corte", price: 199.90,
+    description: "Cabelos mais saudáveis, fortes e renovados.", included: ["Botox capilar", "Reconstrução capilar", "Corte"] },
+  { id: "combo-depilacao-feminina", name: "Combo Depilação Feminina", price: 85,
+    description: "Três áreas, um cuidado completo.", included: ["Buço", "Meia perna", "Axila"], active: true, approved: true },
+];
+
 export const pricingNotes = {
-  hair: "Os valores são a partir dos preços informados e podem variar conforme o comprimento, volume e necessidades de cada cabelo. Consulte o valor final antes de agendar.",
-  other: "Valores iniciais sujeitos às condições do atendimento. Consulte para confirmar o orçamento.",
+  hair: "Os valores podem variar conforme o comprimento, volume e necessidades de cada cabelo. Consulte o valor final antes do atendimento.",
+  other: "Os valores anunciados são iniciais. Consulte as condições e confirme o orçamento.",
 };
 
 const currency = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", minimumFractionDigits: 2, maximumFractionDigits: 2 });
