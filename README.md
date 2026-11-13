@@ -23,6 +23,16 @@ O Next.js gera a versão estática em `out/`. A home fica em `/` e a galeria em 
 - `public/originais/` preserva as seis imagens como recebidas. Para incluir um novo trabalho, adicione a imagem original à pasta, cadastre os recortes em `portfolio.ts` e execute `node scripts/imagens.mts`. O script gera os WebPs em `public/trabalhos/`.
 - `src/app/` contém as páginas, o SEO e os estilos. `src/components/` reúne navegação, galeria e animações.
 
+## Deploy no Cloudflare Workers
+
+No projeto Workers conectado ao GitHub, selecione a branch de produção `main` e configure:
+
+- Comando de build: `pnpm run build`.
+- Comando de deploy: `npx wrangler deploy`.
+- Diretório raiz: a raiz do repositório.
+
+O `wrangler.jsonc` publica a exportação estática de `out/`. Configure `SITE_URL` nas variáveis de build com a origem HTTPS definitiva para habilitar a indexação.
+
 ## Deploy no Cloudflare Pages
 
 1. Envie o código para um repositório GitHub e conecte-o ao Cloudflare Pages.
