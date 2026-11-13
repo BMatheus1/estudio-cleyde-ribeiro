@@ -64,11 +64,10 @@ type Promotion = {
   approved: boolean;
   startsOn?: string;
   endsOn?: string;
-  flyerPeriod?: string;
   payment?: string;
 };
 
-const hairCampaign = { active: false, approved: false, flyerPeriod: "01/11 a 30/11", payment: "Pix" };
+const hairCampaign = { active: true, approved: true, payment: "Pix" };
 
 export const promotions: Promotion[] = [
   { ...hairCampaign, id: "combo-capilar-1", name: "Corte + Escova + Hidratação", price: 89.90,

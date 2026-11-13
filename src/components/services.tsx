@@ -29,7 +29,6 @@ export function Promotions() {
   // This site is statically exported, so publication dates are evaluated on each build.
   const today = new Intl.DateTimeFormat("sv-SE", { timeZone: "America/Sao_Paulo" }).format(new Date());
   const available = promotions.filter(promo => promo.active && promo.approved &&
-    (!promo.flyerPeriod || (promo.startsOn && promo.endsOn)) &&
     (!promo.startsOn || promo.startsOn <= today) && (!promo.endsOn || today <= promo.endsOn));
 
   if (!available.length) return <p>Consulte o estúdio sobre os próximos combos e promoções.</p>;
