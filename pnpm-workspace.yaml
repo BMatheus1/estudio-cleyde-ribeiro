@@ -1,3 +1,5 @@
-allowBuilds:
-  sharp: false
-verifyDepsBeforeRun: false
+packages:
+  - '.'
+
+ignoredBuiltDependencies:
+  - sharp
