@@ -1,11 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, GraduationCap, Images, MapPin, MessageCircle, Plus, Scissors, Sparkles, UserRound } from "lucide-react";
+import { ArrowRight, ArrowUpRight, Gift, GraduationCap, Images, MapPin, MessageCircle, Plus, Scissors, Sparkles, UserRound } from "lucide-react";
 import type { ReactNode } from "react";
-import { business, groups, whatsapp } from "../data/business";
+import { business, whatsapp } from "../data/business";
 import { Gallery } from "../components/gallery";
 import { HomeFragments } from "../components/home-fragments";
 import { StudioMenuItem } from "../components/studio-menu-item";
+import { Promotions, Services } from "../components/services";
 
 function MenuItem({ id, title, icon: Icon, children }: {
   id: string;
@@ -34,16 +35,11 @@ export default function Home() {
       <div className="studio-navigation">
         <div role="group" aria-label="Explore o estúdio" className="studio-menu">
           <MenuItem id="servicos" title="Nossos Serviços" icon={Scissors}>
-            <div className="studio-services">
-              {groups.map(({ name, entries, icon: Icon }) => <section className="studio-service-group" key={name}>
-                <h2><Icon size={17} strokeWidth={1.5} aria-hidden="true" />{name}</h2>
-                {entries.map(([title, description]) => <details name="estudio-servicos" className="studio-service" key={title}>
-                  <summary><span>{title}</span><Plus className="studio-indicator" size={17} aria-hidden="true" /></summary>
-                  <p>{description}</p>
-                  <a className="text-link" href={whatsapp(`Olá! Vim pelo site do Estúdio Cleyde Ribeiro e gostaria de saber mais sobre ${title.toLowerCase()}.`)}>Consultar pelo WhatsApp <ArrowUpRight size={15} /></a>
-                </details>)}
-              </section>)}
-            </div>
+            <Services />
+          </MenuItem>
+
+          <MenuItem id="combos" title="Combos e Promoções" icon={Gift}>
+            <Promotions />
           </MenuItem>
 
           <MenuItem id="portfolio" title="Portfólio" icon={Images}>

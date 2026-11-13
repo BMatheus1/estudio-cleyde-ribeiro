@@ -297,3 +297,11 @@ details[open] > summary > .studio-indicator { transform: rotate(45deg); }
   .studio-panel { padding-inline: 12px; }
   .studio-whatsapp { margin-inline: 0 auto; }
 }
+
+.catalog-category > summary { color: var(--color-gold-light); font-weight: 650; }
+.catalog-row { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 8px; padding: 8px 0; border-bottom: 1px solid var(--line-dark); font-size: .9rem; }
+.catalog-row .text-link { color: var(--color-gold-light); font-size: .75rem; }
+.catalog-price { display: block; color: var(--color-gold-light); font-size: .8rem; }
+.catalog-options > summary { padding-block: 8px; }
+.catalog-options > .catalog-row { padding-inline-start: 10px; }
+.studio-panel .catalog-note { margin-block: 10px; color: var(--color-champagne); font-size: .78rem; }
