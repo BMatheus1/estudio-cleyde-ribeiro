@@ -8,6 +8,7 @@ import "./globals.css";
 
 
 import { business, whatsapp } from "../data/business";
+import { socialPreview } from "../data/social";
 
 const origin = process.env.SITE_URL;
 export const metadata: Metadata = {
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
   description: business.description,
   metadataBase: origin ? new URL(origin) : undefined,
   alternates: origin ? { canonical: "/" } : undefined,
-  openGraph: { title: business.name, description: business.description, type: "website", locale: "pt_BR", images: origin ? ["/originais/Logotipo.jpeg"] : undefined },
+  ...socialPreview(business.name, business.description, "/"),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
